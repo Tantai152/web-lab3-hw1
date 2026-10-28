@@ -35,6 +35,12 @@ export class DrumSynth {
       case 'crash':
         this._playCrash();
         break;
+      case 'clap':
+        this._playClap();
+        break;
+      case 'cowbell':
+        this._playCowbell();
+        break;
       default:
         break;
     }
@@ -189,6 +195,65 @@ export class DrumSynth {
     gain.connect(ctx.destination);
     noise.start(now);
     this._cleanup([filter, gain], noise, now + 1.01);
+  }
+
+  _playClap() {
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const noise = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+
+    noise.buffer = this._createNoiseBuffer(0.2);
+    filter.type = 'bandpass';
+    // Bandpass 1200Hz tạo tiếng clap sắc nét, punchy.
+    filter.frequency.setValueAtTime(1200, now);
+    filter.Q.setValueAtTime(1, now);
+
+    // Decay ngắn 0.15s tạo tiếng clap ngắn gọn.
+    gain.gain.setValueAtTime(0.6, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start(now);
+    this._cleanup([filter, gain], noise, now + 0.16);
+  }
+
+  _playCowbell() {
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    const gain2 = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(540, now);
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(800, now);
+
+    gain1.gain.setValueAtTime(0.4, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    gain2.gain.setValueAtTime(0.4, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(800, now);
+    filter.Q.setValueAtTime(2, now);
+
+    osc1.connect(gain1);
+    osc2.connect(gain2);
+    gain1.connect(filter);
+    gain2.connect(filter);
+    filter.connect(ctx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+    this._cleanup([gain1, gain2, filter], osc1, now + 0.41);
+    this._cleanup([], osc2, now + 0.41);
   }
 
   destroy() {
