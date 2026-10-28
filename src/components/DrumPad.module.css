@@ -1,0 +1,64 @@
+.pad {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  background: var(--color-surface, #f8fafc);
+  border: 1px solid var(--color-border, #cbd5e1);
+  border-radius: 12px;
+  color: var(--color-text, #1e293b);
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pad:hover {
+  background: var(--color-surface-hover, #e2e8f0);
+}
+
+.pad:active {
+  transform: scale(0.97);
+}
+
+.pad.active {
+  background: var(--color-primary);
+  color: var(--color-on-primary, #ffffff);
+  transform: scale(0.95);
+  border-color: var(--color-primary);
+}
+
+.pad:focus-visible {
+  outline: 3px solid var(--focus, #005fcc);
+  outline-offset: 2px;
+}
+
+.label {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sound {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted, #64748b);
+}
+
+.pad.active .sound {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pad {
+    transition: none;
+  }
+}
